@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Cloudreve Lite
 
 Production-ready self-hosted cloud file manager.
@@ -113,3 +114,6 @@ frontend/src/    React app
 nginx/           Edge reverse proxy
 k8s/             Kubernetes manifests
 ```
+=======
+# cloudrev
+>>>>>>> efa7d9aa4a818e21cbaca8c0c8072f0274beb7e0
