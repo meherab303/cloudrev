@@ -1,0 +1,43 @@
+/* frontend/src/styles/layout.css */
+.app   { display: flex; min-height: 100vh; }
+.main  { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.content { flex: 1; padding: 1.5rem; overflow: auto; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 220px; flex-shrink: 0; background: var(--surface);
+  border-right: 1px solid var(--border); display: flex;
+  flex-direction: column; padding: 1.2rem 1rem;
+  position: sticky; top: 0; height: 100vh; overflow-y: auto;
+}
+.sb-logo { display: flex; align-items: center; gap: 8px; padding: .4rem .5rem; margin-bottom: 1.5rem; }
+.sb-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.sb-logo-text { font-size: 15px; font-weight: 600; }
+.sb-section   { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; padding: .3rem .5rem; margin-bottom: .4rem; margin-top: .8rem; }
+.sb-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; font-size: 13px; color: var(--muted2); cursor: pointer; transition: all .15s; border: none; background: transparent; width: 100%; text-align: left; }
+.sb-item:hover  { background: var(--surface2); color: var(--text); }
+.sb-item.active { background: rgba(79,142,247,.12); color: var(--accent); font-weight: 500; }
+.sb-icon { font-size: 16px; width: 20px; text-align: center; }
+.sb-spacer { flex: 1; }
+
+/* storage bar */
+.sb-storage { margin: 0 .5rem 1rem; }
+.sb-storage-header { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+.sb-storage-label  { font-weight: 600; }
+.sb-bar { height: 5px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
+.sb-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width .5s ease; }
+.sb-storage-sub { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+.sb-user { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 8px; background: var(--surface2); cursor: pointer; border: none; width: 100%; color: var(--text); }
+.sb-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0; }
+.sb-username { font-size: 12px; font-weight: 500; flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sb-logout   { font-size: 11px; color: var(--muted); }
+
+/* ── Topbar ── */
+.topbar { height: 56px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 1rem; padding: 0 1.5rem; background: var(--surface); position: sticky; top: 0; z-index: 10; }
+.topbar-title { font-size: 15px; font-weight: 600; flex: 1; }
+.topbar-btn { display: flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 7px; font-size: 13px; font-weight: 500; border: none; cursor: pointer; transition: all .2s; }
+.topbar-btn.primary { background: var(--accent); color: #fff; }
+.topbar-btn.primary:hover { background: #3a7de8; }
+.topbar-btn.ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.topbar-btn.ghost:hover { border-color: var(--border2); }

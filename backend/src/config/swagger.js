@@ -1,0 +1,47 @@
+export const openapi = {
+  openapi: '3.0.3',
+  info: {
+    title: 'Cloudreve Lite API',
+    version: '2.0.0',
+    description: 'Self-hosted cloud file manager REST API',
+  },
+  servers: [{ url: '/api' }],
+  components: {
+    securitySchemes: {
+      bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+    },
+  },
+  security: [{ bearerAuth: [] }],
+  paths: {
+    '/auth/register': {
+      post: { tags: ['Auth'], security: [], summary: 'Register', requestBody: { content: { 'application/json': { schema: { type: 'object', required: ['email', 'password'], properties: { email: { type: 'string' }, password: { type: 'string' }, name: { type: 'string' } } } } } } },
+    },
+    '/auth/login': {
+      post: { tags: ['Auth'], security: [], summary: 'Login', requestBody: { content: { 'application/json': { schema: { type: 'object', required: ['email', 'password'], properties: { email: { type: 'string' }, password: { type: 'string' } } } } } } },
+    },
+    '/auth/refresh': { post: { tags: ['Auth'], security: [], summary: 'Refresh access token' } },
+    '/auth/logout': { post: { tags: ['Auth'], summary: 'Logout' } },
+    '/auth/me': { get: { tags: ['Auth'], summary: 'Current user' } },
+    '/files/dashboard': { get: { tags: ['Files'], summary: 'Dashboard stats' } },
+    '/files': { get: { tags: ['Files'], summary: 'List files and folders' } },
+    '/files/upload': { post: { tags: ['Files'], summary: 'Upload a file' } },
+    '/files/{id}': { patch: { tags: ['Files'], summary: 'Rename file' }, delete: { tags: ['Files'], summary: 'Move file to trash' } },
+    '/files/{id}/download': { get: { tags: ['Files'], summary: 'Download file' } },
+    '/files/{id}/preview': { get: { tags: ['Files'], summary: 'Signed preview URL' } },
+    '/files/{id}/move': { post: { tags: ['Files'], summary: 'Move file' } },
+    '/files/{id}/copy': { post: { tags: ['Files'], summary: 'Copy file' } },
+    '/files/{id}/restore': { post: { tags: ['Files'], summary: 'Restore from trash' } },
+    '/files/{id}/permanent': { delete: { tags: ['Files'], summary: 'Permanent delete' } },
+    '/folders': { post: { tags: ['Folders'], summary: 'Create folder' } },
+    '/folders/tree': { get: { tags: ['Folders'], summary: 'Folder tree' } },
+    '/folders/{id}': { patch: { tags: ['Folders'], summary: 'Rename folder' }, delete: { tags: ['Folders'], summary: 'Trash folder' } },
+    '/shares': { get: { tags: ['Shares'], summary: 'List shares' }, post: { tags: ['Shares'], summary: 'Create share link' } },
+    '/shares/public/{token}': { get: { tags: ['Shares'], security: [], summary: 'Access public share' } },
+    '/trash': { get: { tags: ['Trash'], summary: 'List trash' }, delete: { tags: ['Trash'], summary: 'Empty trash' } },
+    '/admin/stats': { get: { tags: ['Admin'], summary: 'System statistics' } },
+    '/admin/users': { get: { tags: ['Admin'], summary: 'List users' } },
+    '/admin/audit-logs': { get: { tags: ['Admin'], summary: 'Audit logs' } },
+    '/health': { get: { tags: ['Health'], security: [], summary: 'Liveness' } },
+    '/health/ready': { get: { tags: ['Health'], security: [], summary: 'Readiness' } },
+  },
+};

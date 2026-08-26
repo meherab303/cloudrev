@@ -1,0 +1,108 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: cloudreve-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      frontend:
+        condition: service_started
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: cloudreve-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    container_name: cloudreve-backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      FRONTEND_URL: http://localhost
+      CORS_ORIGIN: http://localhost,http://127.0.0.1
+      JWT_ACCESS_SECRET: change_me_access_secret_min_32_chars!!
+      JWT_REFRESH_SECRET: change_me_refresh_secret_min_32_chars!
+      JWT_ACCESS_EXPIRES: 15m
+      JWT_REFRESH_EXPIRES: 7d
+      BCRYPT_ROUNDS: 12
+      DATABASE_URL: postgresql://cloudreve:cloudreve@postgres:5432/cloudreve?schema=public
+      REDIS_URL: redis://redis:6379
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_USE_SSL: "false"
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      MINIO_BUCKET: cloudreve
+      MINIO_REGION: us-east-1
+      MAX_FILE_SIZE_BYTES: "2147483648"
+      DEFAULT_QUOTA_BYTES: "5368709120"
+      ADMIN_EMAIL: admin@cloudreve.local
+      ADMIN_PASSWORD: Admin123!
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: cloudreve-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cloudreve
+      POSTGRES_PASSWORD: cloudreve
+      POSTGRES_DB: cloudreve
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloudreve -d cloudreve"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: cloudreve-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: cloudreve-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9001:9001"
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:

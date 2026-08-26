@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ResourceType {
+  FILE
+  FOLDER
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String   @default("")
+  role         Role     @default(USER)
+  storageQuota BigInt   @default(5368709120)
+  storageUsed  BigInt   @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  folders       Folder[]
+  files         File[]
+  shares        Share[]
+  permissions   Permission[]
+  grantedPerms  Permission[]     @relation("GrantedBy")
+  auditLogs     AuditLog[]
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([role])
+}
+
+model Folder {
+  id        String    @id @default(uuid())
+  name      String
+  parentId  String?
+  parent    Folder?   @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children  Folder[]  @relation("FolderTree")
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  files     File[]
+  shares    Share[]
+  isTrashed Boolean   @default(false)
+  trashedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId, parentId])
+  @@index([userId, isTrashed])
+  @@index([name])
+}
+
+model File {
+  id        String    @id @default(uuid())
+  name      String
+  mimeType  String
+  size      BigInt
+  objectKey String    @unique
+  folderId  String?
+  folder    Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  shares    Share[]
+  isTrashed Boolean   @default(false)
+  trashedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([userId, folderId])
+  @@index([userId, isTrashed])
+  @@index([name])
+  @@index([mimeType])
+  @@index([createdAt])
+}
+
+model Share {
+  id            String    @id @default(uuid())
+  token         String    @unique
+  fileId        String?
+  file          File?     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  folderId      String?
+  folder        Folder?   @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passwordHash  String?
+  expiresAt     DateTime?
+  downloadCount Int       @default(0)
+  maxDownloads  Int?
+  createdAt     DateTime  @default(now())
+
+  @@index([token])
+  @@index([userId])
+}
+
+model Permission {
+  id           String       @id @default(uuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resourceId   String
+  resourceType ResourceType
+  canRead      Boolean      @default(true)
+  canWrite     Boolean      @default(false)
+  canShare     Boolean      @default(false)
+  grantedById  String
+  grantedBy    User         @relation("GrantedBy", fields: [grantedById], references: [id], onDelete: Cascade)
+  createdAt    DateTime     @default(now())
+
+  @@unique([userId, resourceId, resourceType])
+  @@index([resourceId, resourceType])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  resource  String?
+  ip        String?
+  userAgent String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([token])
+}

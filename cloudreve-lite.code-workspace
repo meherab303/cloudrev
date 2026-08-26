@@ -1,0 +1,53 @@
+{
+  "folders": [
+    { "name": "☁️ Cloudreve Lite", "path": "." }
+  ],
+  "settings": {
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2,
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/uploads/*.{jpg,jpeg,png,mp4,zip,pdf,mp3}": false
+    }
+  },
+  "launch": {
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "🚀 Start Backend",
+        "type": "node",
+        "request": "launch",
+        "cwd": "${workspaceFolder}/backend",
+        "program": "${workspaceFolder}/backend/server.js",
+        "envFile": "${workspaceFolder}/backend/.env",
+        "console": "integratedTerminal"
+      }
+    ]
+  },
+  "tasks": {
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Install All",
+        "type": "shell",
+        "command": "cd backend && npm install && cd ../frontend && npm install",
+        "group": "build",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Start Backend (dev)",
+        "type": "shell",
+        "command": "cd backend && npm run dev",
+        "group": "test",
+        "presentation": { "reveal": "always", "panel": "new" }
+      },
+      {
+        "label": "Start Frontend (dev)",
+        "type": "shell",
+        "command": "cd frontend && npm run dev",
+        "group": "test",
+        "presentation": { "reveal": "always", "panel": "new" }
+      }
+    ]
+  }
+}
