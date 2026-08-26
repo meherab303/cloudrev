@@ -43,7 +43,8 @@ export default function FilesPage() {
 
   const onUpload = async (list) => {
     for (const file of Array.from(list)) {
-      const id = crypto.randomUUID();
+      // const id = crypto.randomUUID();
+      const id = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       setUploads((p) => [...p, { id, name: file.name, progress: 0 }]);
       try {
         const saved = await fileAPI.upload(file, folderId, (pct) => {
